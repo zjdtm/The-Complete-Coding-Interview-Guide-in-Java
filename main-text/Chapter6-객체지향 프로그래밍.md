@@ -175,4 +175,123 @@ public interface Car{
 ## 9. 구성이란 무엇인가?
     
     구성은 더 제한적인 집약 관계입니다. 집약이 자체 생명 주기를 가진다면 구성은 단독으로 존재할 수 없는 객체 관계를 의미한다.
+   
+## SOLID 원칙 이해하기
+ 
+    클래스를 작성하기 위해서는 SOLID 원칙이라는 디자인 패턴 원칙을 가지고 있다. 
+    SOLID 원칙은 
+    S(단일 책임 원칙) O(개방-폐쇄 원칙) L(리스코프 치환 원칙) I(인터페이스 분리 원칙) D(의존관계 역전 원칙)의 약자이다.
     
+### S란 무엇인가?
+S는 SOLID의 첫 번째 원칙인 '단일 책임 원칙'이며 '하나의 객체는 하나의 책임만 가져야 한다' 는 의미이다.
+이 원칙은 높은 유지보수성을 유지할 수 있고 애플리케이션 모듈 전반에서 가시성 제어를 제공함으로써 캡슐화를
+유지할 수 있다.
+    
+### O란 무엇인가?
+O는 SOLID의 두 번째 원칙인 '개방 폐쇄 원칙'이며 '확장에는 열려 있고 수정에는 닫혀 있어야 한다'는 의미이다.
+따라서 클래스는 다른 개발자가 작업을 수행하기 위해 반드시 수정해야 하는 제약 사항을 클래스에 포함해서는 안되며
+다른 개발자가 클래스를 확장하기만 하면 원하는 작업을 할 수 있도록 해야 한다.
+  
+  #### 예시
+  ##### 개방-폐쇄 원칙을 적용하지 않음
+  ```java
+    public interface Shape { }
+  ```
+  
+  ```java 
+    public class Rectangle implements Shape {
+      private final int width;
+      private final int height;
+      
+      // 생성자와 getter는 생략
+   }
+   
+    public class Circle implements Shape {
+      private final int radius;
+      
+      // 생성자와 getter는 생략
+    }
+  ```
+  ##### 면적의 합을 구하기 위한 AreaCalculator 클래스는 다음과 같이 정의하였다.
+  ```java
+    public class AreaCalculator {
+      private final List<Shape> shapes;
+      
+      public AreaCalculator(List<Shape> shapes){
+        this.shapes = shapes;
+      }
+      
+      // 도형을 추가하려면 수정해야 하는 코드
+      public double sum(){
+        int sum = 0;
+        for(Shape shape : sahpes){
+          if(shape.getClass().equals(Circle.class)) {
+            sum += Math.PI * Math.pow((Circle) shape).getRadius(), 2);
+          }else if(shape.getClass().equals(Rectangle.class)) {
+            sum += ((Rectangle) shape).getHeight() * ((Rectangle) shape).getWidth();
+          }
+        }
+        return sum;
+      }
+  ```
+##### 만약 여기서 삼각형의 면적도 구하고 싶어하면 Triangle 클래스를 추가 하고 AreaCalculator 코드까지도 수정해야 한다.
+##### 이렇듯 개방-폐쇄 원칙을 준수하지 않으면 여러 곳에 코드를 수정해야 하는 번거로운 사항이 생긴다.
+<hr>
+
+#### 개방-폐쇄 원칙을 적용
+```java
+    public interface Shape { public double area(); }
+  ```
+  
+  ```java 
+    public class Rectangle implements Shape {
+      private final int width;
+      private final int height;
+      
+      public Rectangle(int width, int height){
+        this.width = width;
+        this.height = height;
+      }
+      
+      @Override
+      public double area(){
+        return width * height;
+      }
+   }
+   
+    public class Circle implements Shape {
+      private final int radius;
+      
+      public Circle(int radius){
+        this.radius = raduis;
+      }
+      
+      @Override
+      public double area(){
+        return Math.PI * Math.pow(radius, 2);
+      }
+    }
+  ```
+  ##### 이제 AreaCalculator 클래스는 수정하지 않고도 각 도형마다 해당하는 area 메서드를 호출하면 면적을 구할 수 있다.
+  ```java
+    public class AreaCalculator {
+      private final List<Shape> shapes;
+      
+      public AreaCalculator(List<Shape> shapes){
+        this.shapes = shapes;
+      }
+      
+      public double sum(){
+       int sum = 0;
+       
+       for(Shape shape : shapes){
+        sum += shapes.area();
+       }
+       return sum;
+      }
+    }
+  ```
+### L이란 무엇인가?
+L은 SOLID의 세 번째 원칙인 '리스코프 치환 원칙'이며 '파생 타입은 반드시 기본 타입을 완벽하게 대체할 수 있어야 한다.'는 의미이다.
+즉 서브클래스 객체가 슈퍼클래스의 객체와 반드시 같은 방식으로 동작해야 한다는 의미이다.
+
