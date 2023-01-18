@@ -295,3 +295,256 @@ O는 SOLID의 두 번째 원칙인 '개방 폐쇄 원칙'이며 '확장에는 �
 L은 SOLID의 세 번째 원칙인 '리스코프 치환 원칙'이며 '파생 타입은 반드시 기본 타입을 완벽하게 대체할 수 있어야 한다.'는 의미이다.
 즉 서브클래스 객체가 슈퍼클래스의 객체와 반드시 같은 방식으로 동작해야 한다는 의미이다.
 
+#### 예
+##### '프리미엄', 'VIP', '무료' 세 가지 유형의 회원이 있는 체스 동호회가 있다. 기본 클래스 역할을 하는 Member(회원) 추상 클래스와 PremiumMember(프리미엄 회원), VipMember(VIP 회원), FreeMember(무료 회원)의 세 가지 서브클래스가 있다. 
+
+<hr>
+
+#### 리스코프 치환 원칙을 따르지 않는 경우
+
+##### Member 추상 클래스는 체스 동호회 구성원을 나타내는 기본 클래스이다.
+```java
+  public abstract class Member {
+    private final String name;
+    
+    public Member(String name){
+      this.name = name;
+    }
+    
+    public abstract void joinTournament();
+    public abstract void organizeTournament();
+  }
+```
+
+##### PremiumMember, VipMember 클래스는 체스 토너먼트에 참가하거나 주최할 수 있다.
+```java
+  public class PremiumMember extends Member {
+    public PremiumMember(String name){
+      super(name);
+    }
+    
+    @Override
+    public void joinTournament(){
+      System.out.println("Premium member joins tournament ...");
+    }
+    
+    @Override
+    public void organizeTournament(){
+      System.out.println("Premium member organize tournament ...");
+    }
+  }
+  
+  public class VipMember extends Member {
+    public VipMember(String name){
+      super(name);
+    }
+    
+    @Override
+    public void joinTournament(){
+      System.out.println("VipMember joins tournament ...");
+    }
+    
+     @Override
+    public void organizeTournament(){
+      System.out.println("VipMember organize tournament ...");
+    }
+  }
+  
+```
+##### FreeMember 클래스는 토너먼트에 참가할 수 있지만 주최는 할 수가 없습니다. 이는 기본 클래스를 대체할 수 없어 리스코프 치환 원칙에 맞지 않다.
+```java
+  public class FreeMember extends Member {
+    public FreeMember(String name){
+      super(name);
+    }
+    
+    @Override
+    public void joinTournament(){
+      System.out.println("Classic Member joins tournament ...");
+    }
+    
+    // 이 메서드는 리스코프 치환 원칙에 맞지 않습니다.
+    @Override
+    public void organizeTournament(){
+      System.out.println("A free Member cannot organize tournaments");
+    } 
+  }
+```
+<hr>
+
+#### 리스코프 치환 원칙을 따르는 경우
+##### 체스 토너먼트에 참가하거나 주최하는 두 가지 일을 분리하기 위해 두 가지 인터페이스를 정의 하는 것으로 리펙터링을 시작한다.
+```java
+  public interface TournamentJoiner {
+    public void joinTournament();
+  }
+  
+  public interface TournamentOrganizer {
+    public void organizeTournament();
+  }
+```
+
+##### Member 추상 클래스는 두 가지 인터페이스를 구현한다.
+```java
+  public abstract class Member implements TournamentJoiner, TournamentOrganizer {
+    private final String name;
+    
+    public Member(String name){
+      this.name = name;
+    }
+  }
+```
+
+##### FreeMember 클래스는 토너먼트를 주최할 수 없기 때문에 Member 기본 클래스가 아닌 TournamentJoiner 인터페이스만 구현한다.
+```java
+  public class FreeMember implements TournamentJoiner {
+    private final String name;
+    
+    public FreeMember(String name){
+      this.name = name;
+    }
+    
+    @Override
+    public void joinTournament(){
+      System.out.println("Free member joins tournament ...");
+    }
+  }
+```
+
+##### 이로써 FreeMember 클래스는 TournamentJoiner 인터페이스를 PremiumMember, VipMember 클래스는 TournamentOrganizer 인터페이스로 대체가 가능하다.
+
+### I란 무엇인가?
+I란 SOLID의 네 번째 원칙인 '인터페이스 분리 원칙'이며 '클라이언트가 사용하지 않을 불필요한 메서드를 강제로 구현하게 해서는 안 된다'는 의미이다. 따라서 하나의 인터페이스를 2개 이상의 인터페이스로 분할해야 한다.
+
+#### 예시  
+#### 인터페이스 분리 원칙을 따르지 않는 경우
+##### Connection 인터페이스
+```java
+  public interface Connection {
+    public void socket();
+    public void http();
+    public void connect();
+  }
+```
+
+##### WwwPingConnection 클래스는 http 메서드가 필요하고 socket 메서드는 필요하지 않지만 Connection 인터페이스를 구현하기 때문에 socket 메서드도 강제로 구현해야 한다.
+
+```java
+  public clas WwwPingConnection implements Connection {
+    private final String www;
+    
+    public WwwPingConnection(String www){
+      this.www = www;
+    }
+    
+    @Override
+    public void http(){
+      System.out.println("Setup an HTTP connection to " + www);
+    }
+    
+    @Override
+    public void connect(){
+      System.out.println("Connnect to " + www);
+    }
+    
+    // socket 메서드가 필요하지 않지만 강제로 재정의 해야 한다.
+    @Override
+    public void socket() { }
+    
+  }
+```
+#### 인터페이스 분리 원칙을 따르는 경우
+##### 인터페이스 분리 원칙을 지키려면 Connection 인터페이스는 connect 메서드만 남기고 http와 socket 메서드는 확장시킨다.
+```java
+  public interface Connection {
+    public void connect();
+  }
+  
+  public interface HttpConnection extends Connection {
+    public void http();
+  }
+  
+  public interface SocketConnection extends Connection {
+    public void socket();
+  }
+```
+##### 이렇게 하면 WwwPingConnection 클래스는 HttpConnection 인터페이스만 구현하면서 http 메서드를 사용할 수 있다.
+
+### D란 무엇인가?
+D란 SOLID의 다섯 번째 원칙인 '의존관계 역전 원칙'이며 '구체화가 아닌 추상화에 의존해야 한다'는 의미이다. 다른 구상 모듈에 의존하는 구상 모듈 대신, 구상 모듈을 결합하기 위해 추상 계층에 의존해야 한다는 것을 의미한다.
+
+#### 예시  
+#### 의존관계 역전 원칙을 따르지 않는 경우
+
+##### JDBC URL 타입을 connect 메서드에 인수로 넣어주는 경우이다. 하지만 다른 JDBC URL 타입을 추가하고 싶다면 이 connect 메서드는 사용할 수가 없다. 이는 구체화에 의존하는 경우이므로 의존관계 역전 원칙을 무시하는 경우이다.
+```java
+  public class PostgreSQLJdbcUrl {
+    private final String dbName;
+    
+    public PostgreSQLJdbcUrl(String dbName){
+      this.dbName = dbName;
+    }
+    
+    public String get(){
+      return "jdbc:postresql:// ... " + this.dbName;
+    }
+  }
+  
+  public class ConnectToDatabase {
+    public void connect(PostgreSQLJdbcUrl postgresql) {
+      System.out.println("Connecting to " + postgresql.get());
+    }
+  }
+```
+#### 의존관계 역전 원칙을 따르는 경우
+##### JDBC URL에서 구현해야 하는 인터페이스로 추상화 시킨다.
+```java
+  public interface JdbcUrl {
+    public String get();
+  }
+```
+
+```java
+  public class PostgreSQLJdbcUrl implements JdbcUrl {
+    private final String dbName;
+    
+    public PostgreSQLJdbcUrl(String dbName){
+      this.dbName = dbName;
+    }
+    
+    @Override 
+    public String get(){
+      return "jdbc:postgresql:// ... " + this.dbName;
+    }
+  }
+  
+  public class MySQLJdbUrl implements JdbcUrl {
+    private final String dbName;
+    
+    public MySQLJdbcUrl(String dbName){
+      this.dbName = dbName;
+    }
+    
+    @Override
+    public String get(){
+      return "jdbc:mysql:// ... " + this.dbName;
+    }
+  }
+  
+  public class OracleJdbcUrl implements JdbcUrl {
+    private final String dbName;
+    
+    public OracleJdbcUrl(String dbName){
+      this.dbName = dbName;
+    }
+  }
+```
+
+##### 이로써 connect 메서드는 JdbcUrl 인터페이스에 의존하기 때문에 JdbcUrl 인터페이스를 구현한 PostgreSQLJdbcUrl, MySQLJdbcUrl, OracleJdbcUrl 클래스를 사용할 수 잇다.
+```java
+  public class ConnectToDatabase {
+    public void connect(JdbcUrl jdbcUrl){
+      System.out.println("Connecting to "  + jdbcUrl.get());
+    }
+  }
+```
