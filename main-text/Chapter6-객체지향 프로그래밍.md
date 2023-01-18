@@ -548,3 +548,77 @@ D란 SOLID의 다섯 번째 원칙인 '의존관계 역전 원칙'이며 '구체
     }
   }
 ```
+
+## 객체지향 프로그래밍에서 메서드 오버라이딩(Overriding)이란 무엇인가?
+    
+    상위 클래스에 메서드를 하위 클래스에서 내용을 변경 하는 것을 뜻한다. 메서드 오버라이딩은 상속 혹은 런타임 다형성에서 사용할 수 있는데
+    상속에서는 슈퍼클래스에 있는 메서드를 서브클래스에서 상속받아 사용할 수가 있다. 이러한 메서드를 오버라이딩 메서드라고한다.
+    런타임 다형성에서는 인터페이스를 구현한 클래스 인터페이스에 있는 메서드를 오버라이딩한다고 할 수 있다.
+    이러한 오버라이딩의 장점은 객체 타입에 따라 실제 호출할 메서드를 런타입에서 결정할 수 있기 때문에 유연하고 확장 가능하다.
+    그래서 최소한의 코드 변경으로 새로운 기능을 추가할 수 있게 해준다.
+    
+> 오버라이딩의 조건
+ - 메서드 이름, 매개변수와 타입, 반환 타입은 슈퍼클래스와 서브클래스 모두 동일해야 한다.
+ - 접근 제어자는 슈퍼 클래스의 메서드보다 좁은 범위로 변경 할 수 없다.
+ - 슈퍼 클래스의 메서드보다 많은 수의 예외를 선언할 수 없다.
+ - private, static, final 메서드는 오버라이드할 수 없다.
+ - 오버라이딩 메서드에는 @Override 어노테이션을 사용해야 한다.
+
+## 객체지향 프로그래밍에서 메서드 오버로딩(Overloading)이란 무엇인가?
+    
+    한 클래스 내에 같은 이름의 메서드를 여러 개 정의하는 것을 메서드 오버로딩(method Overloading) 또는 오버로딩(Overloading) 이라고 한다.
+    컴파일러가 오버로딩된 메서드 호출을 실제 해당하는 메서드로 연결해준다. 따라서 런타임 동안 이러한 연결이 이루어지는 것은 아니다.
+    
+> 오버로딩의 조건  
+  - 매개변수의 개수 또는 타입이 달라야 한다.
+  - 반환 타입은 달라도 상관이 없다.
+  - private, static, final 메서드를 오버로드 할 수 없다.
+  - 같은 클래스에 있는 메서드를 오버로드 할 수 있다.
+  
+## 자바에서 공변 메서드 오버라이딩이란 무엇인가?
+  
+    '공변'은 함께 변한다는 의미로 오버라이딩 메서드의 클라이언트가 반환된 타입의 명시적인 타입 변환을 하지 않아도 된다는 의미이다.
+    
+### 예시     
+### Cloneable 인터페이스를 구현하는 Rectangle 클래스에 clone 메서드는 Object 대신 Rectangle을 반환할 수 있다.
+```java
+  public class Rectangle implements Cloneable {
+    
+    private final int height;
+    private final int width;
+
+    public Rectangle(int height, int width) {
+        this.height = height;
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+    
+    @Override
+    protected Rectangle clone() throws CloneNotSupportedException {
+      Rectangle clone = (Rectangle) super.clone();
+    }
+    
+  }
+  
+  ```java
+  public class Main {
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Rectangle r = new Rectangle(4, 3);
+        Rectangle clone = r.clone();
+
+        System.out.println("Width: " + clone.getWidth());
+        System.out.println("Height: " + clone.getHeight());
+    }
+}
+```
+
+## 오버라이딩 및 오버로딩 메서드에서 예외를 다룰 때 주요 제한 사항은 무엇입니까?
+
+    
