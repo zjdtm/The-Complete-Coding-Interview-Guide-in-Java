@@ -91,3 +91,109 @@ O(nlogn)이 O(n!)보다는 낫지만 여전히 **성능은 나쁘다**. O(n)은 
   // 배열의 크기가 커지면 n^2이 n보다 증가율에 훨씬 더 많은 영향을 미치기 때문에
   // n은 관련이 없어서 제외가 가능하다.
 ```
+
+### 입력 데이터가 다르면 변수도 다르게 설정 예제
+```java
+ for(int i = 0; i < a.length; i++){
+ 
+ }
+ 
+ for(int i = 0; i < a.length; i++){
+ 
+ }
+```
+
+```java
+ for(int i = 0; i < a.length; i++){
+ 
+ }
+ 
+ for(int i = 0; i < b.length; i++){
+ 
+ }
+```
+
+두 개의 코드에 빅 오를 표기하면
+첫 번째 코드에는 동일한 배열 a를 for문으로 두 번 실행하였기 때문에 O(n)으로 표기
+두 번째 코드에는 서로 다른 배열 a와 b를 for문으로 각 각 실행한다.
+이 때 빅 오는 두 for 문의 실행 시간을 반드시 모두 반영해야 하기 때문에 O(a+b)로 표기한다.
+
+### 서로 다른 단계의 합 또는 곱
+
+```java
+ for(int i = 0; i < a.length; i++){
+  System.out.println(a[i]);
+ }
+ 
+ for(int j = 0; j < b.length; j++){
+  System.out.println(b[j]);
+ }
+```
+
+```java
+ for(int i = 0; i < a.length; i++){
+  for(int j = 0; j < b.length; j++){
+   System.out.println(a[i] + b[j]);
+  }
+ }
+```
+
+두 개의 코드에 빅 오를 표기하면
+첫 번째 코드에는 2개의 for 문의 실행 시간을 각 각 더해서 O(a+b)로 표기한다.
+두 번째 코드에는 배열 a의 각 요소 a[i]에 관해 배열 b를 순회하기 때문에 두 실행 시간을 곱한 O(a*b) 로 표기한다.
+
+### logn 실행 시간 예제
+
+logn 실행 시간을 알기 위해서는 이진 검색 알고리즘을 살펴보면 된다.
+> 이진 검색 알고리즘 : 정렬된 리스트에서 특정 요소를 찾으려고 할 때 리스트의 중간 값을 선택 후 중간 값과 크고 작음을 비교하면서 값을 찾는 알고리즘
+  ![image](https://user-images.githubusercontent.com/35757620/214208061-d60128bf-4b0d-4cfc-8436-c9a1066ee8a9.png)
+  - 출처 : https://commons.wikimedia.org/wiki/File:Binary_Search.png -
+
+만약 16개의 요소에서 값을 찾는다고 가정하면
+16 / 2 = 8
+8 / 2 = 4
+4 / 2 = 2
+순으로 요소가 점차 줄어든다. 이를 빅 오로 표현하면 다음과 같다.
+
+$16 * (\frac{1}{2})^{4} = 1$
+
+배열의 크기를 n, 단계 수를 k라고 하면
+
+$n * (\frac{1}{2})^{k} = 1$ -> $2^{k} = n$ -> $\log_{2} n = k$
+
+빅 오를 표현할 때 로그의 밑은 표현 하지 않아서 O(logn) 이다.
+
+### 재귀 실행 시간 예제
+
+```java
+ int fibonacci(int k) {
+  if (k <= 1){
+   return k;
+  }
+  return fibonacci(k - 2) + fibonacci(k - 1);
+ }
+```
+코드의 빅 오를 표기하면 $O(n^{2})$ 로 생각했지만
+
+트리로 표현하면 차수는 각 노드가 지닌 가지의 개수 깊이는 k
+
+이럴 때는 $O(차수^{깊이})$로 표현한다.
+
+따라서 $O(2^{n})$ 이다.
+
+### 이진 트리의 중위 순회
+포화 이진 검색 트리는 모든 노드가 정확히 2개의 자식 노드를 가지며, 모든
+단말 노드가 같은 수준이나 깊이에 있는 이진 검색 트리입니다. 
+다음 코드를 빅 오로 표기한다면 
+```java
+ void printInOrder(Node node){
+  if(node != null){
+   printInOrder(node.left);
+   System.out.print(" " + node.element);
+   printInOrder(node.right);
+  }
+ }
+```
+$O2^{깊이}$ 이다.
+
+
