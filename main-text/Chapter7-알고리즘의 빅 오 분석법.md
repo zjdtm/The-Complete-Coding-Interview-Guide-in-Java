@@ -318,3 +318,127 @@ a의 배열의 크기를 4라고 가정하면 다음과 같은 실행 과정을 
 
 ### 중첩 반복문에서 O(1) 식별
 
+```java
+ for(int i = 0; i < a.length; i++){
+  for(int j = 0; j < a.length; j++){
+   for(int q = 0; q < 1000000; q++){
+    System.out.println(a[i] + a[j]);
+   }
+  }
+ }
+```
+두 번째 for문만 보자면 빅 오는 $O(n^{2})$ 입니다.
+세 번째 for문은 배열 크기에 상관없이 0에서 100만까지 반복하기 때문에 빅 오는 상수인 $O(1)$이다.
+따라서 이 코드의 빅 오는 $O(n^{2})$이다.
+
+### 배열의 1/2 반복 실행
+
+```java
+ for(int i = 0; i < a.length/2; i++){
+  System.out.println(a[i]);
+ }
+```
+
+배열의 절반만 순회한다고 빅 오 시간에 영향을 주지 않는다.
+따라서 $O(n/2)$가 아닌 상수를 제거한 $O(n)$이다.
+
+### 빅 오 표현식 줄이기
+
+- $O(n + p)$
+- $O(n + logn)$
+ 
+ $O(n)$으로 표현할 수 있는 것은 $O(n + logn)$이다.
+ 비우세항으로 $O(n + logn)$은 $O(n)$이 가능하지만 $O(n + p)$는 p가 n과 어떤 관계인지 모르기 때문에 
+ 두 변수 모두 사용해야 한다.
+ 
+### O(logn)의 시간 복잡도를 가지는 반복 실행
+
+```java
+ for(int i = 0; i< a.length; i++){
+  for(int j = a.length; j > 0; j /= 2){
+   System.out.println(a[i] + ", " + j);
+  }
+ }
+```
+
+외부 for문만 보자면 빅 오는 $O(n)$이다.
+
+내부 for문을 보면 배열의 길이를 절반씩 점차 줄여 나간다.
+이렇게 절반으로 줄이는 알고리즘은 대부분 빅 오를 $O(logn)$으로 표현한다.
+
+따라서 이 코드의 빅 오는 $O(n) * O(logn) = O(nlogn)$이다.
+ 
+### 문자열 비교
+
+```java
+ String[] sortArrayOfString(String[] a){
+  for(int i = 0; i < a.length; i++){
+   // O(nlogn) 알고리즘으로 각 문자열을 정렬합니다.
+  }
+  
+  // O(nlogn) 알고리즘으로 배열 자체를 정렬합니다.
+  
+  return a;
+ }
+```
+
+하나의 문자열을 정렬할 때는 $O(nlogn)$만큼의 시간과 배열의 크기 $O(n)$를 곱한 $O(n^{2}logn)$ 라고 생각했지만 
+$O(nlogn)$ 에서 **n은 문자열의 길이**를 나타내고 a.length개의 문자열을 정렬하기 때문에 여기서 **n은 배열의 크기**를 나타낸다.
+
+두 가지 변수를 사용하기 때문에 각 각 다르게 나타내야 한다.
+- s : 가장 긴 String의 길이
+- p : String 배열의 크기
+
+s와 p를 사용하면 하나의 문자열 정렬의 시간 복잡도는
+$O(slogs)$이며 이 작업을 p번 반복하면 $O(p) * O(slogs) = O(p*slogs)$이다.
+
+String을 비교할 때 고정된 폭을 가진 정수의 경우처럼 상수 시간이 걸린다고 가정했지만 
+String의 길이는 다양하므로 비교시간도 다양하다. 
+각 String 비교는 $O(s)$가 걸리고 배열 정렬에 $O(plogp)$가 걸리기 때문에 문자열 배열을 정렬하는 총 시간 복잡도는 $O(s) * O(plogp) = O(s*plogp)$이다.
+
+따라서 빅 오는 O(p*slogs) + O(s*p(logs + logp))가 된다.
+
+### 펙토리얼 빅 오
+
+```java
+ long factorial(int num) {
+  if(num >= 1){
+   return num * factorial(num - 1);
+  }else {
+   return 1;
+  }
+ }
+```
+
+위 코드의 빅 오는 $O(n!)$ 이라고 생각하겠지만 재귀 과정에서 n, n-1, n-2, ... 1의 펙토리얼을 한 번씩 구하기 때문에
+빅 오는 $O(n)$이다.
+
+### n 표기법을 사용할 때 주의 사항
+```java
+ // 코드 1
+ int multiply(int x, int y) {
+  int result = 1;
+  for(int i = 1; i <=y; i++){
+   result *= x;
+  }
+  return result;
+ }
+
+ // 코드 2
+ int powerxy(int x, int y){
+  if(y < 0){
+   return 0;
+  } else if(y==0){
+   return 1;
+  } else {
+   return x * powerxy(x, y-1);
+  }
+ }
+```
+
+코드 1은 상수 시간이 걸리는 작업을 y번 수행한다. 입력값 x는 실행 시간 증가율에 영향을 주지 않으므로
+빅 오는 $O(y)$이다.
+
+코드 2는 y - 1, y - 2, ... , 0을 재귀로 순회한다. 각 y 입력을 한 번 씩 순회하기 때문에 빅 오는 $O(y)$로 표현한다.
+
+### 합과 반복 횟수
