@@ -83,16 +83,171 @@ public interface Car{
 
 ## 4. 캡슐화란 무엇인가?
     
-    코드와 데이터를 하나의 작업 단위인 클래스로 결합하고 외부 코드가 이 데이터에 접근하지 못하게 하는 것을 뜻한다.
+    객체 상태를 외부로부터 숨기고 이 상태에 접근하기 위한 일련의 public 메서드를 노출하는 기법이다.
     이 캡슐화를 통해 정보를 은닉화 할 수 있고 코드의 느슨한 결합이 가능해진다. 
     자바의 캡슐화는 public, private, protected 같은 접근 제어자로 구현 할 수 있다.
+       
+- private : 같은 클래스 내에서만 접근 가능 
+- default : 같은 패키지 내에서만 접근 가능
+- protected : 같은 패키지 내에서, 그리고 다른 패키지의 자손클래스에서 접근 가능
+- public : 접근 제한이 없다.
+    
+### 예시
+#### hero 클래스는 hp, mp, hungry 상태(필드)를 가지고 있고
+#### sleep(), battle(), eat(), snoring(), burp(), getHp(), getMp(), getHungry() (메서드)을 가지고 있다. 
+#### public 메서드인 sleep(), battle(), eat()으로만 상태를 수정할 수 있다.
+```java
+public class hero {
+    private int hp = 100;
+    private int mp = 80;
+    private int hungry = 90;
+
+    public void sleep(){
+      System.out.println("Sleep ...");
+      hp++;
+      mp++;
+      hungry++;
+    }
+
+    public void battle(){
+      System.out.println("Battle ...");
+      hp--;
+      mp--;
+      hungry++;
+    }
+
+    public void eat(){
+      System.out.println("Eat ...");
+      hp++;
+      mp++;
+      hungry--;
+    }
+
+    private void snoring(){
+      System.out.println("Zzz");
+    }
+
+    private void burp(){
+      System.out.println("Yami");
+    }
+
+    public int getHp(){
+      return hp;
+    }
+
+    public int getMp(){
+      return mp;
+    }
+
+    public int getHungry(){
+      return hungry;
+    }      
+}
+```
     
 ## 5. 상속이란 무엇인가?
     
     객체가 다른 객체의 코드를 재사용할 수 있도록 허용하는 것이다. 그러면 코드의 재사용성을 유지할 수 있고, 
     각 객체만의 고유로직도 추가할 수 있다. 자바에서는 extends 키워드를 사용하는데 
     상속된 객체는 슈퍼클래스 또는 부모 클래스라고 하고 상속받은 객체는 서브클래스 또는 자식 클래스라고 한다.
-    또한 여러 개의 클래스를 상속할 수 없다.
+    하지만 여러 개의 클래스를 상속할 수는 없다.
+   
+### 예시
+
+한 RPG 게임에 용사는 여러 개의 무기(Weapon)를 가지고 있다.
+
+무기 중에는 검(Sword), 도끼(Axe)이 있다.
+
+무기(Weapon) 클래스는 **부모 클래스**로 공통 로직을 정의하고 (Sword), 도끼(Axe) 클래스는 **자식 클래스**로
+공통 로직과 각 객체별로 필요한 로직을 사용할 수 있다.
+
+#### 부모 클래스인 무기(Weapon) 클래스는 이름, 사거리 필드를 가지고 있다.
+```java
+   public class Weapon {
+
+    private String name;
+    private int range;
+
+    public Weapon(String name, int range) {
+        this.name = name;
+        this.range = range;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public void setRange(int range) {
+        this.range = range;
+    }
+}
+```
+
+#### 자식 클래스인 검(Sword), 도끼(Axe) 클래스는 부모 클래스인 무기(Wepaon)를 상속받아 
+#### 공통 로직을 사용할 수 있으며 다른 로직도 따로 추가해서 사용이 가능하다.
+```java
+
+  // (Sword)
+  public class Sword extends Weapon(){
+    private int range;
+    
+    public Sword(String name, int range){
+      super(name);
+      this.range = range;
+    }
+    
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
+    }
+  }
+  
+  // 도끼(Axe)
+  public class Axe extends Weapon(){
+    private int range;
+    
+    public Sword(String name, int range){
+      super(name);
+      this.range = range;
+    }
+    
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
+    }
+  }    
+```
+
+```java
+  public class Main {
+    public static void main(String[] args) {
+    
+        Sword w = new Sword("Dragon Sword", 30, "붕 붕 붕");
+        Axe a = new Axe("Lightning Axe", 40, 40);
+
+        System.out.println("Sword name is " + w.getName() + " range is "+ w.getRange());
+        System.out.println("Axe name is " + a.getName() + " weight is " + a.getWeight());
+        /* 
+        Sword name is Dragon Sword range is 30
+        Axe name is Lightning Axe weight is 40
+        */
+    }
+}
+```
     
 ## 6. 다형성이란 무엇인가?
     
@@ -101,8 +256,8 @@ public interface Car{
     다형성을 구현한 방법 중 대표적인 것이 오버로딩과 오버라이딩입니다.
     
 ### 예시
-#### Traingle 클래스는 여러개의 메서드가 동일한 이름을 가지고 있지만 매개변수가 각 각 다르기 때문에 
-#### 오버로드된 메서드의 형태에 따라 객체는 다르게 동작한다 . 이를 컴파일 타입 다형성이라고 한다.
+#### Triangle 클래스는 여러개의 메서드가 동일한 이름을 가지고 있지만 매개변수가 각 각 다르기 때문에 
+#### 오버로드된 메서드의 형태에 따라 객체는 다르게 동작한다. 이를 컴파일 타입 다형성이라고 한다.
 ```java
     public class Triangle {
       public void draw(){
@@ -176,7 +331,7 @@ public interface Car{
     
     구성은 더 제한적인 집약 관계입니다. 집약이 자체 생명 주기를 가진다면 구성은 단독으로 존재할 수 없는 객체 관계를 의미한다.
    
-## SOLID 원칙 이해하기
+## 10. SOLID 원칙 이해하기
  
     클래스를 작성하기 위해서는 SOLID 원칙이라는 디자인 패턴 원칙을 가지고 있다. 
     SOLID 원칙은 
