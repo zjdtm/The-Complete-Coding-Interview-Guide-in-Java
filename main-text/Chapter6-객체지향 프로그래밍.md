@@ -65,7 +65,7 @@ public interface Car{
     }
   }
 ```
-#### 운전자는 구현내용을 몰라도 자동차를 용할 수 있다.
+#### 운전자는 구현내용을 몰라도 자동차를 이용할 수 있다.
 ```java
   public class Main {
     public static void main(String[] args){
